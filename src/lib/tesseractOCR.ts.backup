@@ -1,0 +1,148 @@
+import Tesseract from 'tesseract.js';
+import * as pdfjsLib from 'pdfjs-dist';
+
+pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js`;
+
+export interface TesseractProgress {
+  status: string;
+  progress: number;
+  currentPage?: number;
+  totalPages?: number;
+}
+
+export interface TesseractResult {
+  text: string;
+  confidence: number;
+  pages: number;
+}
+
+async function pdfToImages(pdfFile: File): Promise<string[]> {
+  const arrayBuffer = await pdfFile.arrayBuffer();
+  const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+  const images: string[] = [];
+
+  for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+    const page = await pdf.getPage(pageNum);
+    const viewport = page.getViewport({ scale: 2.0 });
+
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+    if (!context) {
+      throw new Error('Failed to get canvas context');
+    }
+
+    canvas.width = viewport.width;
+    canvas.height = viewport.height;
+
+    await page.render({
+      canvasContext: context,
+      viewport: viewport,
+    }).promise;
+
+    images.push(canvas.toDataURL('image/png'));
+  }
+
+  return images;
+}
+
+export async function processPDFWithTesseract(
+  pdfFile: File,
+  onProgress?: (progress: TesseractProgress) => void
+): Promise<TesseractResult> {
+  onProgress?.({
+    status: 'Converting PDF to images',
+    progress: 0,
+  });
+
+  const images = await pdfToImages(pdfFile);
+  const totalPages = images.length;
+
+  onProgress?.({
+    status: 'Initializing Tesseract',
+    progress: 10,
+    totalPages,
+  });
+
+  const worker = await Tesseract.createWorker('eng', 1, {
+    logger: (m: any) => {
+      if (m.status === 'recognizing text') {
+        onProgress?.({
+          status: 'Recognizing text',
+          progress: 10 + (m.progress * 80),
+          currentPage: 1,
+          totalPages,
+        });
+      }
+    },
+  });
+
+  const allText: string[] = [];
+  let totalConfidence = 0;
+
+  for (let i = 0; i < images.length; i++) {
+    const pageNum = i + 1;
+    onProgress?.({
+      status: `Processing page ${pageNum} of ${totalPages}`,
+      progress: 10 + ((i / totalPages) * 80),
+      currentPage: pageNum,
+      totalPages,
+    });
+
+    const { data } = await worker.recognize(images[i]);
+    allText.push(data.text);
+    totalConfidence += data.confidence;
+  }
+
+  await worker.terminate();
+
+  onProgress?.({
+    status: 'OCR Complete',
+    progress: 100,
+    currentPage: totalPages,
+    totalPages,
+  });
+
+  return {
+    text: allText.join('\n\n--- Page Break ---\n\n'),
+    confidence: totalConfidence / totalPages,
+    pages: totalPages,
+  };
+}
+
+export async function processImageWithTesseract(
+  imageFile: File,
+  onProgress?: (progress: TesseractProgress) => void
+): Promise<TesseractResult> {
+  onProgress?.({
+    status: 'Initializing Tesseract',
+    progress: 0,
+  });
+
+  const imageUrl = URL.createObjectURL(imageFile);
+
+  const worker = await Tesseract.createWorker('eng', 1, {
+    logger: (m: any) => {
+      if (m.status === 'recognizing text') {
+        onProgress?.({
+          status: 'Recognizing text',
+          progress: m.progress * 100,
+        });
+      }
+    },
+  });
+
+  const { data } = await worker.recognize(imageUrl);
+  await worker.terminate();
+  URL.revokeObjectURL(imageUrl);
+
+  onProgress?.({
+    status: 'OCR Complete',
+    progress: 100,
+  });
+
+  return {
+    text: data.text,
+    confidence: data.confidence,
+    pages: 1,
+  };
+}
