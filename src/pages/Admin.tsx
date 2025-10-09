@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { Activity, FileText, Stethoscope, BarChart3 } from 'lucide-react';
+import { Activity, FileText, Stethoscope, BarChart3, Users } from 'lucide-react';
 import { AdminDashboard } from './AdminDashboard';
 import { AdminLogs } from './AdminLogs';
 import { DiagnosticDashboard } from './DiagnosticDashboard';
+import { UserManagement } from './UserManagement';
 
-type TabType = 'dashboard' | 'logs' | 'diagnostics';
+type TabType = 'dashboard' | 'logs' | 'diagnostics' | 'users';
 
 export function Admin() {
   const [activeTab, setActiveTab] = useState<TabType>('dashboard');
@@ -28,6 +29,12 @@ export function Admin() {
       icon: Stethoscope,
       description: 'Run system health checks',
     },
+    {
+      id: 'users' as TabType,
+      name: 'Users',
+      icon: Users,
+      description: 'Manage system users',
+    },
   ];
 
   const renderContent = () => {
@@ -38,6 +45,8 @@ export function Admin() {
         return <AdminLogs />;
       case 'diagnostics':
         return <DiagnosticDashboard />;
+      case 'users':
+        return <UserManagement />;
       default:
         return <AdminDashboard />;
     }

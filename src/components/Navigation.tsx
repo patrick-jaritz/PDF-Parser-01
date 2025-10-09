@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { FileText, Key, LogOut, Menu, X, Home, BarChart3, ScrollText, Activity, Search, GitBranch, BookOpen } from 'lucide-react';
+import { FileText, Key, LogOut, Menu, X, Home, BarChart3, ScrollText, Activity, Search, GitBranch, BookOpen, User } from 'lucide-react';
 
 export function Navigation() {
   const { user, isAdmin, signOut } = useAuth();
@@ -98,14 +98,18 @@ export function Navigation() {
           </div>
 
           <div className="hidden md:flex items-center gap-4">
-            <div className="text-sm text-gray-700">
-              <span className="font-medium">{user.email}</span>
-              {isAdmin && (
-                <span className="ml-2 px-2 py-1 bg-blue-100 text-blue-800 text-xs font-semibold rounded-full">
-                  Admin
-                </span>
-              )}
-            </div>
+            <Link
+              to="/profile"
+              className="flex items-center gap-2 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              <User className="w-4 h-4" />
+              <div className="text-sm">
+                <div className="font-medium">{user.email}</div>
+                {isAdmin && (
+                  <span className="text-xs text-blue-600">Admin</span>
+                )}
+              </div>
+            </Link>
             <button
               onClick={handleSignOut}
               className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
@@ -183,14 +187,19 @@ export function Navigation() {
             )}
 
             <div className="pt-3 mt-3 border-t border-gray-200">
-              <div className="px-4 py-2 text-sm text-gray-700">
-                <div className="font-medium mb-1">{user.email}</div>
-                {isAdmin && (
-                  <span className="inline-block px-2 py-1 bg-blue-100 text-blue-800 text-xs font-semibold rounded-full">
-                    Admin
-                  </span>
-                )}
-              </div>
+              <Link
+                to="/profile"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center gap-2 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors mb-2"
+              >
+                <User className="w-4 h-4" />
+                <div className="text-sm">
+                  <div className="font-medium">{user.email}</div>
+                  {isAdmin && (
+                    <span className="text-xs text-blue-600">Admin</span>
+                  )}
+                </div>
+              </Link>
               <button
                 onClick={handleSignOut}
                 className="w-full flex items-center gap-2 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors text-left"

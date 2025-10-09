@@ -3,6 +3,8 @@ import { Navigation } from './components/Navigation';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { Home } from './pages/Home';
 import { Login } from './pages/Login';
+import { Profile } from './pages/Profile';
+import { UserManagement } from './pages/UserManagement';
 import { TestApiKeys } from './pages/TestApiKeys';
 import { Admin } from './pages/Admin';
 import { OCRSpaceDiagnostics } from './pages/OCRSpaceDiagnostics';
@@ -27,10 +29,26 @@ function App() {
           }
         />
         <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/admin"
           element={
             <ProtectedRoute requireAdmin>
               <Admin />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/users"
+          element={
+            <ProtectedRoute requireAdmin>
+              <UserManagement />
             </ProtectedRoute>
           }
         />
