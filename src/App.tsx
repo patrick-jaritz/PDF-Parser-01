@@ -4,6 +4,8 @@ import { ProtectedRoute } from './components/ProtectedRoute';
 import { Home } from './pages/Home';
 import { Login } from './pages/Login';
 import { Profile } from './pages/Profile';
+import { Analytics } from './pages/Analytics';
+import { Templates } from './pages/Templates';
 import { UserManagement } from './pages/UserManagement';
 import { TestApiKeys } from './pages/TestApiKeys';
 import { Admin } from './pages/Admin';
@@ -33,6 +35,22 @@ function App() {
           element={
             <ProtectedRoute>
               <Profile />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/analytics"
+          element={
+            <ProtectedRoute>
+              <Analytics />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/templates"
+          element={
+            <ProtectedRoute>
+              <Templates />
             </ProtectedRoute>
           }
         />
