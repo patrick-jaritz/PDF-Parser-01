@@ -41,7 +41,7 @@ export function SimplifiedDashboard() {
   const [userType, setUserType] = useState<'novice' | 'intermediate' | 'expert'>('novice');
   const [showAdvancedSettings, setShowAdvancedSettings] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [ocrProvider, setOcrProvider] = useState<'google-vision' | 'mistral' | 'tesseract' | 'aws-textract' | 'azure-document-intelligence' | 'ocr-space' | 'openai-vision'>('google-vision');
+  const [ocrProvider, setOcrProvider] = useState<'google-vision' | 'mistral' | 'tesseract' | 'aws-textract' | 'azure-document-intelligence' | 'ocr-space' | 'openai-vision'>('openai-vision');
   const [llmProvider, setLlmProvider] = useState<'openai' | 'anthropic' | 'mistral-large'>('openai');
   const [openaiVisionModel, setOpenaiVisionModel] = useState<'gpt-4o' | 'gpt-4o-mini' | 'gpt-4-turbo'>('gpt-4o-mini');
   const [openaiLlmModel, setOpenaiLlmModel] = useState<'gpt-4o' | 'gpt-4o-mini' | 'gpt-4-turbo' | 'gpt-4'>('gpt-4o-mini');
