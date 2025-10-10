@@ -29,7 +29,7 @@ interface UserStats {
 export function SimplifiedDashboard() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [selectedTemplate, setSelectedTemplate] = useState<any>(null);
-  const [showUploadArea, setShowUploadArea] = useState(false);
+  const [showUploadArea, setShowUploadArea] = useState(true);
   const [recentDocuments, setRecentDocuments] = useState<RecentDocument[]>([]);
   const [userStats, setUserStats] = useState<UserStats>({
     totalDocuments: 0,
@@ -106,10 +106,10 @@ export function SimplifiedDashboard() {
           const latestJob = jobs.length > 0 ? jobs[0] : null;
           
           return {
-            id: doc.id,
-            filename: doc.filename,
-            status: doc.status,
-            created_at: doc.created_at,
+          id: doc.id,
+          filename: doc.filename,
+          status: doc.status,
+          created_at: doc.created_at,
             extracted_text: latestJob?.extracted_text,
             structured_output: latestJob?.structured_output,
             processing_time_ms: latestJob?.processing_time_ms
@@ -190,7 +190,7 @@ export function SimplifiedDashboard() {
     const llmModel = llmProvider === 'openai' ? openaiLlmModel :
                      llmProvider === 'anthropic' ? anthropicModel :
                      mistralModel;
-
+    
     if (ocrProvider === 'tesseract') {
       if (tesseractText) {
         await processWithExtractedText(selectedFile, tesseractText, tesseractMetadata!, selectedTemplate, llmProvider, llmModel);
@@ -538,11 +538,11 @@ export function SimplifiedDashboard() {
                   )}
 
                   {!llmProvider.includes('openai') && !llmProvider.includes('anthropic') && !llmProvider.includes('mistral') && (
-                    <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
-                      <p className="text-xs text-green-900">
+                  <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
+                    <p className="text-xs text-green-900">
                         <strong>Tip:</strong> LLM providers generate structured data from extracted text.
-                      </p>
-                    </div>
+                    </p>
+                  </div>
                   )}
                 </div>
               </div>
@@ -677,7 +677,7 @@ export function SimplifiedDashboard() {
         )}
 
         {/* Main Upload Area */}
-        <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200 mb-8">
+        <div className="bg-white rounded-xl shadow-sm p-6 border-2 border-blue-300 mb-8 animate-pulse-border">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
               <Upload className="w-6 h-6 text-blue-600" />
